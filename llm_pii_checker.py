@@ -38,6 +38,8 @@ class LLMPIIChecker:
                         "content": (
                             "You are a data privacy expert. For each row, return a single JSON object listing the columns "
                             "containing PII, the table name, and the actual PII value. Only include columns where you detect PII. "
+                            "PII does not include where column names may be a name or email, but the value is clearly not a PII value. "
+                            "For example, a column named 'name' with value '3fb841a7' is not PII.  "
                             "Respond with only valid JSON using this schema: "
                             '{"table":"<table_name>","columns_with_pii":[{"column":"<column_name>","value":"<pii_value>"}]}'
                         ),
