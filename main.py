@@ -18,7 +18,7 @@ class MySQLConfig:
 @dataclass
 class AppConfig:
     mysql_config: MySQLConfig
-    sample_size: int = 100
+    sample_size: int
 
 
 class MySQLPIIInspector:
@@ -78,7 +78,7 @@ def main():
     parser.add_argument("--user", required=True)
     parser.add_argument("--password", required=True)
     parser.add_argument("--port", type=int, default=3306)
-    parser.add_argument("--sample-size", type=int, default=100)
+    parser.add_argument("--sample-size", type=int, default=5)
     args = parser.parse_args()
 
     mysql_cfg = MySQLConfig(
