@@ -46,7 +46,6 @@ class LLMPIIChecker:
                         {"role": "user", "content": prompt},
                     ],
                     stream=self.config.stream,
-                    temperature=0.0,
                     max_completion_tokens=256,
                 )
                 try:
@@ -56,6 +55,7 @@ class LLMPIIChecker:
                     completion_text = str(response)
             except Exception as e:
                 # request-level failure -> treat as no-detect for this row
+                print(f"Error calling LLM for row {row}: {e}")
                 return None
 
             # parse JSON (best-effort)
