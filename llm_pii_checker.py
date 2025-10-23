@@ -16,7 +16,7 @@ class LLMPIIChecker:
         )
 
     def check_pii(
-        self, table: str, rows: list[dict[str, Any]]
+        self, table: str, rows: list[dict[str, Any]], columns: list[str]
     ) -> dict[str, list[dict[str, Any]]]:
         """
         For each row, call the LLM with an explicit prompt containing:
@@ -28,7 +28,7 @@ class LLMPIIChecker:
         pii_rows: list[dict[str, Any]] = []
 
         for row in rows:
-            prompt: str = self._build_prompt(row, table)
+            prompt: str = self._build_prompt(row, table, columns)
 
             response = self.client.chat.completions.create(
                 model=self.config.api_engine,
@@ -77,10 +77,13 @@ class LLMPIIChecker:
 
         return {"pii_rows": pii_rows}
 
-    def _build_prompt(self, row: dict[str, Any], table: str) -> str:
+    def _build_prompt(self, row: dict[str, Any], table: str, columns: list[str]) -> str:
+        # include explicit column list and values to reduce ambiguity
+        cols_str = ", ".join(columns) if (columns := list(row.keys())) else ""
         field_str = "\n".join([f"- {key}: {value}" for key, value in row.items()])
         return (
             f"Table: {table}\n"
+            f"Columns: {cols_str}\n"
             f"Row\n{field_str}\n\n"
             "Task: Identify which columns, if any, contain PII. "
             "Respond in JSON format exactly like this example:\n"

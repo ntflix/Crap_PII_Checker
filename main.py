@@ -48,9 +48,9 @@ class MySQLPIIInspector:
             cursor.execute("SHOW TABLES")
             tables = [row[0] for row in cursor.fetchall()]
             for table in tables:
-                sampled_rows = self._sample_table(cursor, table)
-                # pass the table name along with sampled rows so the LLM can reference table + columns
-                pii_result = self.llm_checker.check_pii(table, sampled_rows)
+                sampled_rows, columns = self._sample_table(cursor, table)
+                # pass table name, sampled rows, and explicit column names so the LLM can reference table + columns
+                pii_result = self.llm_checker.check_pii(table, sampled_rows, columns)
                 print(
                     f"DB: {db_name}, Table: {table} -- PII Found: {len(pii_result['pii_rows'])}"
                 )
@@ -66,11 +66,11 @@ class MySQLPIIInspector:
         self, cursor, table_name: str
     ) -> list[dict[str, Any]]:  # pyright: ignore[reportExplicitAny]
         cursor.execute(f"SELECT * FROM `{table_name}` LIMIT {self.sample_size}")
-        columns = cursor.column_names
+        columns = list(cursor.column_names)
         rows = cursor.fetchall()
         random.shuffle(rows)  # Shuffle and take up to sample_size if more are present
         rows = rows[: self.sample_size]
-        return [dict(zip(columns, row)) for row in rows]
+        return [dict(zip(columns, row)) for row in rows], columns
 
 
 # ----- Command-Line Interface -----
