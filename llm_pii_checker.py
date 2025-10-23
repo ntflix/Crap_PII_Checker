@@ -47,7 +47,7 @@ class LLMPIIChecker:
                     ],
                     stream=self.config.stream,
                     temperature=0.0,
-                    max_tokens=256,
+                    max_completion_tokens=256,
                 )
                 try:
                     response_message = response.choices[0].message  # type: ignore
