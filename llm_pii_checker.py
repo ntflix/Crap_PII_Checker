@@ -68,18 +68,35 @@ class LLMPIIChecker:
                     except Exception:
                         parsed = None
 
+            # Validate parsed output: table must match and columns must be known
             if parsed and isinstance(parsed, dict):
-                cols_with_pii = parsed.get("columns_with_pii", [])
-                if cols_with_pii:
+                parsed_table = parsed.get("table")
+                raw_cols_with_pii = parsed.get("columns_with_pii", [])
+
+                if parsed_table != table:
+                    # ignore responses that reference a different table
+                    continue
+
+                valid_cols: list[dict[str, Any]] = []
+                if isinstance(raw_cols_with_pii, list):
+                    for item in raw_cols_with_pii:
+                        if not isinstance(item, dict):
+                            continue
+                        col_name = item.get("column")
+                        val = item.get("value")
+                        if isinstance(col_name, str) and col_name in columns:
+                            valid_cols.append({"column": col_name, "value": val})
+
+                if valid_cols:
                     pii_rows.append(
-                        {"table": table, "row": row, "columns_with_pii": cols_with_pii}
+                        {"table": table, "row": row, "columns_with_pii": valid_cols}
                     )
 
         return {"pii_rows": pii_rows}
 
     def _build_prompt(self, row: dict[str, Any], table: str, columns: list[str]) -> str:
-        # include explicit column list and values to reduce ambiguity
-        cols_str = ", ".join(columns) if (columns := list(row.keys())) else ""
+        # include explicit column list and values to reduce ambiguity; use provided columns list when available
+        cols_str = ", ".join(columns) if columns else ", ".join(list(row.keys()))
         field_str = "\n".join([f"- {key}: {value}" for key, value in row.items()])
         return (
             f"Table: {table}\n"
