@@ -39,6 +39,7 @@ class LLMPIIChecker:
                                 "For example, a column named 'name' with value '3fb841a7' is not PII. "
                                 "Additionally, where a date of birth (or similar) column contains all the same value for every row, and especially if it "
                                 "is fairly recent (e.g. 2025), that is likely to have been obfuscated and is not PII. "
+                                "Do not count references as PII. "
                                 "Respond with only valid JSON using this schema: "
                                 '{"table":"<table_name>","columns_with_pii":[{"column":"<column_name>","value":"<pii_value>"}]}'
                             ),
