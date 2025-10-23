@@ -59,10 +59,10 @@ class LLMPIIChecker:
                             "containing PII, the table name, and the actual PII value. Only include columns where you detect PII. "
                             "PII does not include where column names may be a name or email, but the value is clearly not a PII value. "
                             "For example, a column named 'username' with value '3fb841a7' is not PII, so use common sense to avoid false positives. "
-                            "Similarly, IDs (e.g. learner_id, user_id) that are just numeric or alphanumeric codes should **not** be counted as PII. "
+                            "Similarly, IDs (e.g. learner_id, user_id, x_identity_value or similar) that are just numeric or alphanumeric codes should **not** be counted as PII. "
                             "Additionally, where a date of birth (or similar) column contains all the same value for every row, and especially if it "
                             "is fairly recent (e.g. 2025), that is likely to have been obfuscated and is not PII. "
-                            "Do not count references, IDs, random alphanumeric strings, or similar as PII. "
+                            "Do not count references, IDs, random alpha&/numeric strings, or similar as PII. "
                             "Respond with only valid JSON using this schema: "
                             '[{"table":"<table_name>","row_index":0,"columns_with_pii":[{"column":"<column_name>","value":"<pii_value>"}]}]'
                         ),
