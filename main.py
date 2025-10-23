@@ -54,6 +54,10 @@ class MySQLPIIInspector:
                 print(
                     f"DB: {db_name}, Table: {table} -- PII Found: {len(pii_result['pii_rows'])}"
                 )
+                for pii_row in pii_result["pii_rows"]:
+                    print(
+                        f"\tRow: {pii_row['row']}, Columns with PII: {pii_row['columns_with_pii']}"
+                    )
 
         cursor.close()
         conn.close()
