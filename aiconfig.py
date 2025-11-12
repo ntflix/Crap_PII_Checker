@@ -1,4 +1,5 @@
 import os
+from dotenv import load_dotenv
 from typing import Protocol
 
 
@@ -13,6 +14,8 @@ class AIConfiguration(Protocol):
 
 class PIICheckerConfig(AIConfiguration):
     def __init__(self) -> None:
+        load_dotenv()
+
         self.api_base = os.environ.get("OPENAI_API_BASE", "https://azure.example.com")
         self.api_key = os.environ.get("OPENAI_API_KEY", "your_api_key")
         self.api_engine = os.environ.get("OPENAI_API_ENGINE", "engine")
